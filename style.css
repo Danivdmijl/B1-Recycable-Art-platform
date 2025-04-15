@@ -1,0 +1,42 @@
+.arat-signinsocial-container {
+	cursor: pointer;
+}
+
+.arat-signinsocial-container:hover .arat-whitefilter {
+    filter: brightness(0) saturate(100%) invert(1);
+}
+
+.arat-buttonform .elementor-button.elementor-size-sm {
+	display: none;	
+}
+
+.arat-pointer:hover {
+	cursor: pointer;
+}
+
+/* Header */
+
+.ps-notif {
+	background: #F9FFFA;
+    border-radius: 50%;
+    border: 1px solid #E9E9E9;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+	box-shadow: 0px 4px 4px 0px #0000001A;
+}
+
+.ps-notif:hover {
+	background: #54B66B;
+	transition: all 0.1s ease-in;
+	cursor: pointer;
+	transform: scale(1.1);
+	.gci-bell {
+		color: white;
+	} 
+	.fa-heart {
+		color: white;
+	}
+}
