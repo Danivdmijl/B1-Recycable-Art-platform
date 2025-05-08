@@ -1,0 +1,66 @@
+.gc-header__widget {
+    color: var(--menu-text-color);
+    display: flex;
+}
+
+.gc-header__widget .widget_peepsowidgetuserbar {
+    padding: 0 !important;
+}
+
+.gc-header__menu>ul{
+	display:none;
+}
+
+.gc-header__menu{
+	flex-grow: 0;
+}
+
+.gc-header__search{
+	width: 718px !important;
+    height: 40px !important;
+    background: #F4F4F4 !important;
+    border-radius: 8px !important;
+
+}
+
+.gc-header__widget {
+    color: var(--menu-text-color);
+    display: flex;
+	gap:5px;
+   	margin-left: 30px;
+}
+
+.header__widget .psw-userbar__inner {
+    margin-left: 15px;
+}
+
+
+
+
+
+.gc-header__search {
+  position: relative;
+}
+
+.gc-header__search .custom-placeholder {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-style: italic;
+  pointer-events: none; /* belangrijk: niet klikbaar */
+  font-size: 0.95rem;
+  margin-left: 3rem;
+	
+}
+
+@media (min-width: 61.25em) {
+    .gc-header__search--open .gc-header__search-box-inner {
+        transform: translateY(-25%);
+    }
+}
+
+.gc-scroll__to-top{
+	background:#55B76B !important;
+}
