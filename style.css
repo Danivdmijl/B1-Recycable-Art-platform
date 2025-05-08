@@ -27,10 +27,7 @@
 	transition: all 0.1s ease-in;
 	cursor: pointer;
 	transform: scale(1.1);
-	.gci-bell {
-		color: white;
-	}
-	.fa-heart {
+	i {
 		color: white;
 	}
 }
@@ -146,4 +143,17 @@ body:not(#__) .stories.snapgram .story.seen .item-preview {
 
 .stories.carousel {
 	display: flex;
+}
+
+body:not(#__) .pointer {
+	cursor: pointer;
+}
+
+/* Hide login activity */
+.ps-landing{
+	display: none;
+}
+
+.gcis.gci-ellipsis-h {
+	transform: rotate(90deg);
 }
