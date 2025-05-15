@@ -1,7 +1,7 @@
 <?php
+
 /**
  * Plugin Name: Account Review Panel
- * Plugin URI: https://www.linkedin.com/in/dani-van-der-mijl/
  * Description: A plugin that takes all the new registerd users and put them in a review queue
  * Version: 1.0
  * Author: Dani van der Mijl
@@ -12,18 +12,20 @@
 
 <?php
 // Add a menu item for the plugin
-function account_review_add_admin_menu() {
+function account_review_add_admin_menu()
+{
 	add_menu_page(
-    	'Account Review Panel',   
-    	'Account Review',        
-    	'manage_options',         
-    	'account-review-panel',   
-    	'account_review_settings_page' 
+		'Account Review Panel',
+		'Account Review',
+		'manage_options',
+		'account-review-panel',
+		'account_review_settings_page'
 	);
 }
 
-function account_review_custom_menu_style() {
-    echo '
+function account_review_custom_menu_style()
+{
+	echo '
     <style>
         /* Style the menu link */
         #adminmenu .toplevel_page_account-review-panel > a {
@@ -42,14 +44,111 @@ function account_review_custom_menu_style() {
         #adminmenu .toplevel_page_account-review-panel:hover div.wp-menu-image:before {
             color: #ffffff !important;
         }
+		
+		.widefat tfoot tr td, .widefat tfoot tr th, .widefat thead tr td, .widefat thead tr th {
+			color: white;
+    		font-weight: 500;
+		}
+		
+		.aratthead {
+			background: #4B9C61;
+		}
+		.aratthead th {
+    		position: sticky;
+    		top: 0;
+    		background: #4B9C61;
+    		z-index: 10;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+		}
+
+		.aratcenter {
+			text-align: center !important;
+			vertical-align: middle !important;
+			font-weight: 500 !important;
+		}
+		body:not(#__) .aratbuttonapprove {
+			background: #01A7ED;
+			border: 1px solid #01A7ED;
+			color: white;
+		}
+		body:not(#__) .aratbuttonapprove:hover {
+			background: #4B9C61;
+			border: 1px solid #4B9C61;
+			transition: all 0.25s ease-in-out;
+			color: white;
+			transform: scale(1.07);
+		}
+		
+		body:not(#__) .aratbuttondeny:hover {
+			background: #C6131B;
+			border: 1px solid #C6131B;
+			transition: all 0.25s ease-in-out;	
+			color: white;
+		  	transform: scale(1.1);
+		}
+		.aratmascot-wrapper {
+			position: absolute;
+    		bottom: 0;
+    		right: 0;
+    		z-index: 0;
+    		pointer-events: none;
+		}
+
+		.aratmascot-wrapper img.aratmascot {
+			height: 400px;
+			width: auto;
+		}
+		
+		.arattitle {
+			font-size: 26px;
+   	 		margin-top: 50px;
+    		margin-bottom: 30px;
+		}
+		
+		/* Custom Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 13px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #4B9C61;
+    border-radius: 5px;
+    border: 2px solid #f0f0f0;
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+    cursor: grab;
+}
+
+scrollbar-width: auto;
+scrollbar-color: #4B9C61 #f0f0f0;
+
     </style>';
 }
 add_action('admin_head', 'account_review_custom_menu_style');
 
 add_action('admin_menu', 'account_review_add_admin_menu');
 
+function account_review_enqueue_admin_styles($hook)
+{
+	if ($hook !== 'toplevel_page_account-review-panel') {
+		return;
+	}
+	wp_enqueue_style('account-review-admin-style', plugin_dir_url(__FILE__) . 'admin-style.css');
+}
+add_action('admin_enqueue_scripts', 'account_review_enqueue_admin_styles');
+
+
 // Create the settings page content
-function account_review_settings_page() {
+function account_review_settings_page()
+{
 	// Handle Approve or Deny actions
 	if (isset($_GET['action']) && isset($_GET['user_id']) && current_user_can('manage_options')) {
 		$user_id = intval($_GET['user_id']);
@@ -64,13 +163,31 @@ function account_review_settings_page() {
 		}
 
 		if ($action === 'deny') {
-			require_once(ABSPATH.'wp-admin/includes/user.php'); // Needed for wp_delete_user
+			require_once(ABSPATH . 'wp-admin/includes/user.php'); // Needed for wp_delete_user
 			wp_delete_user($user_id);
 			echo '<div class="notice notice-error"><p>User denied and deleted.</p></div>';
 		}
 	}
 
-	echo '<h1>Account Review Panel</h1>';
+	echo '<h1 class="arattitle">Account Review Panel</h1>';
+
+	// Create fake users trigger
+	if (isset($_GET['create_fake']) && current_user_can('manage_options')) {
+		account_review_create_fake_users();
+		echo '<div class="notice notice-success"><p>40 fake users created</p></div>';
+	}
+
+	// Delete test users trigger
+	if (isset($_GET['delete_test_users']) && current_user_can('manage_options')) {
+		account_review_delete_test_users();
+		echo '<div class="notice notice-error"><p>All testuser accounts deleted</p></div>';
+	}
+
+	echo '<p>
+	<a href="' . admin_url('admin.php?page=account-review-panel&create_fake=true') . '" class="button button-secondary">Create 40 Test Accounts</a>
+	<a href="' . admin_url('admin.php?page=account-review-panel&delete_test_users=true') . '" class="button button-secondary" style="margin-left: 10px;" onclick="return confirm(\'Are you sure you want to delete all testuser accounts?\');">Delete Test Accounts</a>
+</p>';
+
 
 	// Get users with the 'under_review' role
 	$args = array(
@@ -85,44 +202,50 @@ function account_review_settings_page() {
 		return;
 	}
 
-echo '<table class="widefat fixed" style="max-width: 1000px;">';
-echo '<thead>';
-echo '<tr>';
-echo '<th>Username</th>';
-echo '<th>Email</th>';
-echo '<th>Registered</th>';
-echo '<th>Registered as</th>';
-echo '<th>Actions</th>';
-echo '</tr>';
-echo '</thead>';
-echo '<tbody>';
-
-foreach ($under_review_users as $user) {
-	$approve_url = admin_url('admin.php?page=account-review-panel&action=approve&user_id=' . $user->ID);
-	$deny_url = admin_url('admin.php?page=account-review-panel&action=deny&user_id=' . $user->ID);
-
+	echo '<div style="max-height: 600px; overflow-y: auto; max-width: 1000px; margin-bottom: 20px;">';
+	echo '<div class="aratmascot-wrapper"><img src="https://arat-wp.duckduckdev.nl/wp-content/uploads/2025/05/Asset-4-1-scaled.png" class="aratmascot" alt="Mascot" /></div>';
+	echo '<table class="widefat fixed" style="width: 100%;">';
+	echo '</div>';
+	echo '<thead class="aratthead">';
 	echo '<tr>';
-	echo '<td>' . esc_html($user->user_login) . '</td>';
-	echo '<td>' . esc_html($user->user_email) . '</td>';
-	echo '<td>' . esc_html($user->user_registered) . '</td>';
-	echo '<td>Coming Soon</td>';
-	echo '<td>';
-	echo '<a href="' . esc_url($approve_url) . '" class="button button-primary" style="margin-right: 5px;">Approve</a>';
-	echo '<a href="' . esc_url($deny_url) . '" class="button button-secondary" onclick="return confirm(\'Are you sure you want to delete this user?\');">Deny</a>';
-	echo '</td>';
+	echo '<th class="aratcenter">Profile Picture</th>';
+	echo '<th class="aratcenter">Username</th>';
+	echo '<th class="aratcenter">Email</th>';
+	echo '<th class="aratcenter">Registered</th>';
+	echo '<th class="aratcenter">Registered as</th>';
+	echo '<th class="aratcenter">Actions</th>';
 	echo '</tr>';
-}
+	echo '</thead>';
+	echo '<tbody>';
 
-echo '</tbody>';
-echo '</table>';
+	foreach ($under_review_users as $user) {
+		$approve_url = admin_url('admin.php?page=account-review-panel&action=approve&user_id=' . $user->ID);
+		$deny_url = admin_url('admin.php?page=account-review-panel&action=deny&user_id=' . $user->ID);
+		$avatar = get_avatar($user->ID, 48); // 48px breed
 
+		echo '<tr>';
+		echo '<td class="aratcenter">' . $avatar . '</td>';
+		echo '<td class="aratcenter">' . esc_html($user->user_login) . '</td>';
+		echo '<td class="aratcenter">' . esc_html($user->user_email) . '</td>';
+		echo '<td class="aratcenter">' . esc_html($user->user_registered) . '</td>';
+		echo '<td class="aratcenter">Coming Soon</td>';
+		echo '<td class="aratcenter">';
+		echo '<a href="' . esc_url($approve_url) . '" class="button button-primary aratbuttonapprove" style="margin-right: 5px;">Approve</a>';
+		echo '<a href="' . esc_url($deny_url) . '" class="button button-secondary aratbuttondeny" onclick="return confirm(\'Are you sure you want to delete this user?\');">Deny</a>';
+		echo '</td>';
+		echo '</tr>';
+	}
+
+	echo '</tbody>';
+	echo '</table>';
 }
 ?>
 
 <?php
 // Register the custom "Under Review" role on plugin activation 
 
-function account_review_register_reviewed_member_role() {
+function account_review_register_reviewed_member_role()
+{
 	add_role(
 		'reviewed_member',
 		'Reviewed Member',
@@ -132,7 +255,8 @@ function account_review_register_reviewed_member_role() {
 register_activation_hook(__FILE__, 'account_review_register_reviewed_member_role');
 
 
-function account_review_register_under_review_role() {
+function account_review_register_under_review_role()
+{
 	add_role(
 		'under_review',
 		'Under Review',
@@ -142,7 +266,8 @@ function account_review_register_under_review_role() {
 register_activation_hook(__FILE__, 'account_review_register_under_review_role');
 
 // Automatically assign "Under Review" role to new users
-function account_review_set_user_under_review($user_id) {
+function account_review_set_user_under_review($user_id)
+{
 	$user = get_userdata($user_id);
 	if ($user) {
 		$user->set_role('under_review');
@@ -152,7 +277,8 @@ add_action('user_register', 'account_review_set_user_under_review');
 ?>
 
 <?php
-function account_review_block_under_review_login($user, $username, $password) {
+function account_review_block_under_review_login($user, $username, $password)
+{
 	// If authentication failed before this point, just return it
 	if (is_wp_error($user)) {
 		return $user;
@@ -170,4 +296,43 @@ function account_review_block_under_review_login($user, $username, $password) {
 }
 add_filter('authenticate', 'account_review_block_under_review_login', 30, 3);
 
-?>add
+function enqueue_review_panel_styles()
+{
+	wp_enqueue_style('review-panel-style', plugin_dir_url(__FILE__) . 'css/review-panel.css');
+}
+add_action('admin_enqueue_scripts', 'enqueue_review_panel_styles');
+
+function account_review_create_fake_users()
+{
+	if (!current_user_can('manage_options')) return;
+
+	$existing = get_users(['role' => 'under_review']);
+	if (count($existing) >= 40) return; // Prevent flooding
+
+	for ($i = 1; $i <= 40; $i++) {
+		$username = 'testuser' . $i;
+		if (!username_exists($username)) {
+			$user_id = wp_create_user($username, 'TestPassword123!', $username . '@example.com');
+			if (!is_wp_error($user_id)) {
+				$user = new WP_User($user_id);
+				$user->set_role('under_review');
+			}
+		}
+	}
+}
+
+function account_review_delete_test_users()
+{
+	if (!current_user_can('manage_options')) return;
+
+	$users = get_users([
+		'search' => 'testuser*',
+		'search_columns' => ['user_login'],
+	]);
+
+	require_once(ABSPATH . 'wp-admin/includes/user.php'); // Voor wp_delete_user
+
+	foreach ($users as $user) {
+		wp_delete_user($user->ID);
+	}
+}
