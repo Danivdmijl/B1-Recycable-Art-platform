@@ -80,6 +80,18 @@ body{
 
 }
 
+.buttonFormContainer{
+    display: flex;
+    justify-content: space-between;
+}
+
+.RemakerForm > .RemakerForm-next,
+.RemakerForm > .RemakerForm-previous
+{
+    width: 30%;
+    display: inline;
+}
+
 .RemakerForm-buttons{
     display: flex;
     justify-content: space-between;

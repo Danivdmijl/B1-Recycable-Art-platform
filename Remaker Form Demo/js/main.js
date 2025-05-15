@@ -83,15 +83,20 @@ const kaartgegevens = [ // alle gegevens van de verschillende kaartjes
     const form = document.createElement("form"); // hier worden de form settings ingesteld
     form.className = "RemakerForm";
     form.setAttribute("method", "POST");
-    form.setAttribute("action", "processRemaker.php");
+    form.setAttribute("action", "/processRemaker.php");
 
     kaart.velden.forEach(v => { // hier worden alle input velden met labels aangemaakt
-      const label = document.createElement("label");
-      label.textContent = v.vraag;
+
+      const inputId = `input-${v.name}`; // genereer uniek id
+
+      const label = document.createElement("label"); 
+      label.setAttribute("for", inputId); // geef de label het unieke input id mee
+      label.textContent = v.vraag; 
 
       const input = document.createElement("input");
       input.type = v.type;
       input.name = v.name;
+      input.id = inputId; // geef de input het unieke input id mee
       input.required = true;
       if (antwoorden[v.name]) input.value = antwoorden[v.name];
 
@@ -133,13 +138,25 @@ const kaartgegevens = [ // alle gegevens van de verschillende kaartjes
         current++;
         renderCard(current);
       };
+
+      buttonContainer.appendChild(prevBtn); // voegt de buttons doe aan de container 
+      buttonContainer.appendChild(nextBtn);
+
     } else { // als je op de laatste pagina zit veranderd de button naar een verzend knop
       nextBtn.type = "submit";
       nextBtn.textContent = "Submit";
+
+      const buttonFormContainer = document.createElement("div");
+      buttonFormContainer.classList =  "buttonFormContainer";
+
+      buttonFormContainer.appendChild(prevBtn);
+      buttonFormContainer.appendChild(nextBtn);
+      form.appendChild(buttonFormContainer); // voegt de submit button toe aan de form 
     }
 
-    buttonContainer.appendChild(prevBtn); // voegt de buttons doe aan de container 
-    buttonContainer.appendChild(nextBtn);
+
+
+    
     article.appendChild(buttonContainer); // voegt de container met buttons toe aan het kaartje
 
     // Progress bar
