@@ -26,7 +26,7 @@ body{
 
 .RemakerForm-wrapper{
     width: 70%;
-    height: 45rem;
+    height: 100%;
     background: #fafcfa;
     border-radius: 1.3rem;
     display: flex;
@@ -34,26 +34,17 @@ body{
     justify-content: space-between;
     border: .1rem solid #dbecdc;
     box-shadow: 0 0 .5rem 0 rgba(0,0,0,0.05);
-}
-
-.RemakerForm-wrapper-1{
-}
-
-.RemakerForm-wrapper-2{
-display: none;
-}
-
-.RemakerForm-wrapper-3{
-    display: none;
-}
-
-.RemakerForm-wrapper-4{
-    display: none;
+    animation-name: popup;
+    animation-duration: .6s;
+    animation-timing-function: ease;
+    animation-delay: .2s;
+    animation-fill-mode: both; 
 
 }
 
 .RemakerForm-title{
     padding-inline: 2rem;
+    padding-bottom: 2rem;
     padding-top: 2rem;
     color: #747474;
     line-height: 1.5em;
@@ -80,6 +71,7 @@ display: none;
     padding-inline: .75rem;
     border: 0.1rem solid #1e93d4;
     border-radius: 5rem;
+    background: #f1f7f1;
 }
 
 .RemakerForm > input:focus-visible{
@@ -128,4 +120,17 @@ width: 20%;
 height: 100%;
 background-color: #4A9F4F;
 border-bottom-left-radius: 1.3rem;
+}
+
+/* animaties */
+
+@keyframes popup {
+    from{
+        transform: translateY(3rem);
+        opacity: 0;
+    }   
+    to{
+        transform: translateY(0);
+        opacity: 1;
+    } 
 }
