@@ -2,7 +2,7 @@
 /*
 Plugin Name: Remaker Form
 Description: A plugin that creates a form for remakers to register.
-Version: 1.0.0
+Version: 1.0.1
 Text Domain: remaker-form-demo
 Author: Ian Schaafsma
 Author URI: https://www.linkedin.com/in/ian-schaafsma-2330a9270/
@@ -48,6 +48,8 @@ class RemakerForm {
 
     public function load_assets()
     {
+		
+		if (is_page('arat-remaker-form')) {
         wp_enqueue_style(
             'remaker-form',
             plugin_dir_url( __FILE__ ) . 'css/main.css',
@@ -63,11 +65,18 @@ class RemakerForm {
             1,
             true // in de footer inplaats van de header
         );
+		}
     }
 
     public function load_shortcode()
     {
-        return 'hello the shortcode is working!';
+        return '<script defer>
+        
+        window.addEventListener("load", (event) => {
+        renderCard(current);
+        });
+        
+        </script>';
     }
 
 }

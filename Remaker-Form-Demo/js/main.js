@@ -63,6 +63,12 @@ const kaartgegevens = [ // alle gegevens van de verschillende kaartjes
     }
   ];
 
+  const backgroundImage = document.createElement("img");
+  backgroundImage.draggable = false;
+  backgroundImage.classList.add("background-layer");
+  backgroundImage.src = "https://arat-wp.duckduckdev.nl/wp-content/uploads/2025/05/Landing-background.webp";
+  document.body.appendChild(backgroundImage);
+
   let current = 0; // houdt bij bij welk kaartje je bent
   const antwoorden = {}; // om de antwoorden op te slaan
   const formContainer = document.getElementById("form"); // de container waar alles ingeplaats moet worden
@@ -177,4 +183,4 @@ const kaartgegevens = [ // alle gegevens van de verschillende kaartjes
     formContainer.appendChild(article);
   }
 
-  renderCard(current);
+  
