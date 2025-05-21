@@ -2,7 +2,7 @@
 /*
 Plugin Name: Remaker Form
 Description: A plugin that creates a form for remakers to register.
-Version: 1.0.1
+Version: 1.0.2
 Text Domain: remaker-form-demo
 Author: Ian Schaafsma
 Author URI: https://www.linkedin.com/in/ian-schaafsma-2330a9270/
@@ -70,12 +70,16 @@ class RemakerForm {
 
     public function load_shortcode()
     {
+		 $form_action = plugins_url('results.php', __FILE__);
         return '<script defer>
-        
-        window.addEventListener("load", (event) => {
-        renderCard(current);
+      window.addEventListener("load", (event) => {
+            const form = document.getElementById("my-form");
+            if (form) {
+                form.setAttribute("action", "' . esc_url($form_action) . '");
+            }
+
+            renderCard(current);
         });
-        
         </script>';
     }
 
@@ -83,4 +87,3 @@ class RemakerForm {
 
 new RemakerForm;
 
-// Shortcode om index.html in te laden
