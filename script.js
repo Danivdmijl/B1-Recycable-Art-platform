@@ -24,3 +24,19 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
+
+
+// Onboarding Register
+  function togglePassword(el) {
+    const input = el.previousElementSibling;
+    input.type = input.type === "password" ? "text" : "password";
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.isUserLoggedIn) {
+      const loginButton = document.querySelector(".aratlogin");
+      if (loginButton) {
+        loginButton.style.display = "none";
+      }
+    }
+  });
