@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Art Mouse Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    #gameArea {
+      position: relative;
+      width: 800px;
+      height: 600px;
+      background-color: #fff;
+      border: 2px solid #ccc;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    #mouse {
+      position: absolute;
+      width: 80px;
+      left: 50px;
+      top: 50px;
+      z-index: 2;
+      transition: left 0.02s, top 0.02s;
+    }
+
+    #art {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      z-index: 1;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Art Mouse Game 🎨🐭</h1>
+  <div id="gameArea">
+    <img id="mouse" src="https://arat-wp.duckduckdev.nl/wp-content/uploads/2025/05/Asset-4-1-1-scaled.png" alt="Mouse" />
+    <img id="art" src="https://arat-wp.duckduckdev.nl/wp-content/uploads/2025/05/kunstwerk.jpg" alt="Artwork" />
+  </div>
+  <div id="info-bar" style="display: flex; justify-content: center; gap: 30px; font-size: 18px; font-weight: bold; margin-top: 10px;">
+    <div id="score-box">Score: <span id="score">0</span></div>
+    <div id="level-box">Level: <span id="level">1</span></div>
+    <div id="timer-box">Time: <span id="timer">60</span>s</div>
+  </div>  
+  <script>
+    const mouse = document.getElementById('mouse');
+    const art = document.getElementById('art');
+    const scoreEl = document.getElementById('score');
+    const levelEl = document.getElementById('level');
+    const timerEl = document.getElementById('timer');
+    const gameArea = document.getElementById('gameArea');
+
+    let score = 0;
+    let level = 1;
+    let speed = 20;
+    let posX = 50, posY = 50;
+    let timeLeft = 60;
+    let gameInterval;
+    let gameOver = false;
+
+    window.addEventListener("keydown", function(e) {
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+        e.preventDefault();
+      }
+    }, false);
+
+    function moveArt() {
+      const x = Math.random() * (gameArea.clientWidth - art.clientWidth);
+      const y = Math.random() * (gameArea.clientHeight - art.clientHeight);
+      art.style.left = `${x}px`;
+      art.style.top = `${y}px`;
+    }
+
+    function checkCollision() {
+      const mouseRect = mouse.getBoundingClientRect();
+      const artRect = art.getBoundingClientRect();
+      const gameRect = gameArea.getBoundingClientRect();
+
+      const mouseX = mouseRect.left - gameRect.left;
+      const mouseY = mouseRect.top - gameRect.top;
+      const artX = artRect.left - gameRect.left;
+      const artY = artRect.top - gameRect.top;
+
+      const overlap = !(
+        mouseX + mouse.width < artX ||
+        mouseX > artX + art.clientWidth ||
+        mouseY + mouse.height < artY ||
+        mouseY > artY + art.clientHeight
+      );
+
+      if (overlap) {
+        score++;
+        scoreEl.textContent = score;
+        moveArt();
+
+        if (score % 5 === 0) {
+          level++;
+          levelEl.textContent = level;
+          speed += 2;
+        }
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (gameOver) return;
+      switch (e.key) {
+        case 'ArrowUp': posY -= speed; break;
+        case 'ArrowDown': posY += speed; break;
+        case 'ArrowLeft': posX -= speed; break;
+        case 'ArrowRight': posX += speed; break;
+      }
+
+      posX = Math.max(0, Math.min(posX, gameArea.clientWidth - mouse.clientWidth));
+      posY = Math.max(0, Math.min(posY, gameArea.clientHeight - mouse.clientHeight));
+
+      mouse.style.left = `${posX}px`;
+      mouse.style.top = `${posY}px`;
+
+      checkCollision();
+    });
+
+    function startTimer() {
+      gameInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+          clearInterval(gameInterval);
+          gameOver = true;
+          alert("Time's up! Your score is: " + score);
+          resetGame();
+        }
+      }, 1000);
+    }
+
+    function resetGame() {
+      score = 0;
+      level = 1;
+      speed = 20;
+      posX = 50;
+      posY = 50;
+      timeLeft = 60;
+      gameOver = false;
+
+      scoreEl.textContent = score;
+      levelEl.textContent = level;
+      timerEl.textContent = timeLeft;
+
+      mouse.style.left = `${posX}px`;
+      mouse.style.top = `${posY}px`;
+
+      moveArt();
+      startTimer();
+    }
+
+    moveArt();
+    startTimer();
+  </script>
+</body>
+</html>
