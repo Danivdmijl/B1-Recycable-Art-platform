@@ -87,6 +87,7 @@ body{
 .RemakerForm-wrapper > input{
     padding-block: .8rem !important;
     padding-inline: .75rem !important;
+    padding-left: 1.5rem !important;
     border: 0.1rem solid #1e93d4 !important;
     border-radius: 5rem !important;
     background: #f1f7f1 !important;
