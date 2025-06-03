@@ -1,4 +1,4 @@
-	<?php
+<?php
 	/**
 	 * Plugin Name: Account Review Panel
 	 * Description: This plugin allows administrators to manually review and approve or deny new user registrations via a custom admin panel. Users under review are blocked from logging in until 		approved. Includes custom roles, easy test account generator and remover and a styled UI with registration info of the users.
@@ -205,7 +205,7 @@ if ($action === 'approve') {
 			<a href="' . admin_url('admin.php?page=account-review-panel&delete_test_users=true') . '" class="button button-secondary" style="margin-left: 10px;" onclick="return confirm(\'Are you sure you want to delete all testuser accounts?\');">Delete Test Accounts</a>
 		</p>';
 
-		// Get users with the 'under_review' or 'Under Review Remaker' role
+		// Get users with the 'under_review' or 'under_review_remaker' role
 		$args = array(
 			'role__in' => array('under_review', 'under_review_remaker'), // Picking the users with either role
 			'orderby' => 'registered',
@@ -265,23 +265,23 @@ if ($action === 'approve') {
 		add_role(
 			'reviewed_member',
 			'Reviewed Member',
-			[] // No capabilities
+			[] 
 		);
 	}
 
 	function account_underreview_register_remaker_role() {
 		add_role(
-			'under_review_remaker', // Role slug
-			'Under Review Remaker', // Role name as displayed in WordPress
-			[] // Capabilities (empty for now)
+			'under_review_remaker',
+			'Under Review Remaker', 
+			[] 
 		);
 	}
 
 	function account_review_register_reviewed_remaker_role() {
 		add_role(
-			'reviewed_remaker', // Role slug
-			'Reviewed Remaker', // Role name as displayed in WordPress
-			[] // Capabilities (empty for now)
+			'reviewed_remaker', 
+			'Reviewed Remaker', 
+			[]
 		);
 	}
 
@@ -297,7 +297,7 @@ if ($action === 'approve') {
 		account_review_register_under_review_role();
 		account_review_register_reviewed_member_role();
 		account_underreview_register_remaker_role();
-		account_review_register_reviewed_remaker_role(); // Add this line
+		account_review_register_reviewed_remaker_role();
 	}
 	register_activation_hook(__FILE__, 'account_review_activate_plugin');
 	?>
@@ -305,7 +305,6 @@ if ($action === 'approve') {
 
 	<?php
 	function account_review_block_under_review_login($user, $username, $password) {
-		// If authentication failed before this point, just return it
 		if (is_wp_error($user)) {
 			return $user;
 		}
@@ -359,4 +358,16 @@ if ($action === 'approve') {
 			wp_delete_user($user->ID);
 		}
 	}
+
+// Zet automatisch de rol 'under_review' bij nieuwe gebruikers
+function account_review_set_user_under_review($user_id) {
+    $user = new WP_User($user_id);
+
+    // Alleen wijzigen als het een standaard gebruiker is (bijv. 'subscriber')
+    if (in_array('subscriber', $user->roles)) {
+        $user->set_role('under_review');
+    }
+}
+add_action('user_register', 'account_review_set_user_under_review', 10, 1);
+
 
