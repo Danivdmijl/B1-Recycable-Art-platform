@@ -13,17 +13,19 @@ function updateClock() {
 
 // Left Side Menu active state
 document.addEventListener("DOMContentLoaded", function () {
-    const currentUrl = window.location.href;
-    const navItems = document.querySelectorAll(".sidebar .nav-item");
+  const currentUrl = window.location.href.replace(/\/$/, ""); // remove trailing slash
+  const navItems = document.querySelectorAll(".sidebar .nav-item");
 
-    navItems.forEach((item) => {
-      if (currentUrl.startsWith(item.href)) {
-        item.classList.add("active");
-      } else {
-        item.classList.remove("active");
-      }
-    });
+  navItems.forEach((item) => {
+    const itemUrl = item.href.replace(/\/$/, ""); // also remove trailing slash from href
+    if (currentUrl === itemUrl) {
+      item.classList.add("active");
+    } else {
+      item.classList.remove("active");
+    }
   });
+});
+
 
 
 // Onboarding Register
